@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Nav from './components/Nav'
+import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
 import Pricing from './pages/Pricing'
@@ -50,7 +50,7 @@ export default function App() {
     <AuthContext.Provider value={{ user, login, logout }}>
       <BrowserRouter>
         <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100 antialiased">
-          <Nav />
+          <Navbar />
           <main className="flex-1 pt-20">
             <Routes>
               <Route path="/" element={<Home />} />
