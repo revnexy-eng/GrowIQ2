@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans antialiased selection:bg-purple-500 selection:text-white;
+  }
+
+  /* Universal form input defaults */
+  input, textarea, select {
+    @apply bg-white text-slate-900 border-slate-300 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-800 focus:ring-2 focus:ring-purple-600 focus:outline-none rounded-lg transition-colors;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  
+  .btn-primary {
+    @apply bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-500 hover:to-indigo-500 shadow-md hover:shadow-lg focus-visible:outline-purple-600;
+  }
+}
+
+@keyframes growiq-slide {
+  from {
+    transform: translate(12px, 12px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+.animate-growiq-slide {
+  animation: growiq-slide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
