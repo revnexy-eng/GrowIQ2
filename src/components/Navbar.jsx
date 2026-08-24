@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../App'
 
+// 1. Import your image directly from the assets folder
+import logoImg from '../assets/logo.png'
+
 export default function Navbar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
@@ -16,9 +19,9 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-3 text-xl font-bold tracking-tight text-white">
-          {/* Custom Logo Image */}
+          {/* 2. Pass the imported variable to the src attribute */}
           <img 
-            src="/logo.png" 
+            src={logoImg} 
             alt="GrowIQ Logo" 
             className="h-8 w-8 object-contain" 
           />
