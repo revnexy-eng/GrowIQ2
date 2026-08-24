@@ -1,166 +1,142 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../App'
-import ContactPopup from './ContactPopup'
 
-export default function Navbar({ theme, setTheme }) {
+export default function Nav() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const [showPopup, setShowPopup] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleLogout = () => {
     logout()
-    setMobileMenuOpen(false)
-    navigate('/login')
-  }
-
-  const handleRequestDemo = () => {
-    setMobileMenuOpen(false)
-    if (!user) {
-      navigate('/login')
-    } else {
-      setShowPopup(true)
-    }
-  }
-
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark')
+    navigate('/')
   }
 
   return (
-    <>
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-md transition-colors dark:border-slate-800/80 dark:bg-slate-950/80">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
-          {/* Logo & Brand */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <img src="/assets/logo.png" alt="GrowIQ Logo" className="h-9 w-auto transition-transform group-hover:scale-105" />
-            <span className="font-bold text-xl tracking-tight bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-              GrowIQ
-            </span>
+    <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <Link to="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-white">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-600 text-lg">
+            ⚡
+          </span>
+          GrowIQ
+        </Link>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden items-center gap-6 md:flex">
+          <Link to="/" className="text-sm font-medium text-slate-300 hover:text-white transition">
+            Home
+          </Link>
+          <Link to="/pricing" className="text-sm font-medium text-slate-300 hover:text-white transition">
+            Pricing
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <Link to="/pricing" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors">
-              Pricing
-            </Link>
-            {user && (
-              <Link to="/member" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors">
+          {user ? (
+            <div className="flex items-center gap-4">
+              <Link
+                to={user.role === 'admin' ? '/admin' : '/member'}
+                className="text-sm font-medium text-purple-400 hover:text-purple-300 transition"
+              >
                 Dashboard
               </Link>
-            )}
-            {user && user.role === 'admin' && (
-              <Link to="/admin" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-colors">
-                Admin
-              </Link>
-            )}
-          </nav>
-
-          {/* Desktop Right Actions */}
-          <div className="hidden md:flex items-center gap-3">
-            {/* Dark Mode Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              aria-label="Toggle Theme"
-            >
-              {theme === 'dark' ? '☀️' : '🌙'}
-            </button>
-
-            <button onClick={handleRequestDemo} className="btn btn-primary text-xs">
-              Request Demo
-            </button>
-
-            {!user ? (
-              <>
-                <Link to="/login" className="btn text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">
-                  Log in
-                </Link>
-                <Link to="/signup" className="btn bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200">
-                  Sign up
-                </Link>
-              </>
-            ) : (
-              <button onClick={handleLogout} className="btn border border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
+              <button
+                onClick={handleLogout}
+                className="rounded-lg border border-slate-700 px-3 py-1.5 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition"
+              >
                 Log out
               </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link
+                to="/login"
+                className="text-sm font-medium text-slate-300 hover:text-white transition px-3 py-1.5"
+              >
+                Log in
+              </Link>
+              <Link
+                to="/signup"
+                className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-md hover:bg-purple-500 transition"
+              >
+                Sign up
+              </Link>
+            </div>
+          )}
+        </nav>
+
+        {/* Mobile Toggle Button */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white md:hidden"
+        >
+          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {menuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             )}
-          </div>
+          </svg>
+        </button>
+      </div>
 
-          {/* Mobile Menu Button */}
-          <div className="flex items-center gap-2 md:hidden">
-            <button onClick={toggleTheme} className="p-2 text-slate-500 dark:text-slate-400">
-              {theme === 'dark' ? '☀️' : '🌙'}
-            </button>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate-600 dark:text-slate-300 focus:outline-none"
-              aria-label="Toggle Navigation"
+      {/* Mobile Drawer Menu */}
+      {menuOpen && (
+        <div className="border-b border-slate-800 bg-slate-900 px-4 pb-6 pt-4 md:hidden">
+          <nav className="flex flex-col gap-4">
+            <Link
+              to="/"
+              onClick={() => setMenuOpen(false)}
+              className="text-base font-medium text-slate-300 hover:text-white"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Dropdown Drawer */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 pt-2 pb-6 space-y-3">
+              Home
+            </Link>
             <Link
               to="/pricing"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+              onClick={() => setMenuOpen(false)}
+              className="text-base font-medium text-slate-300 hover:text-white"
             >
               Pricing
             </Link>
-            {user && (
-              <Link
-                to="/member"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
-              >
-                Dashboard
-              </Link>
-            )}
-            {user && user.role === 'admin' && (
-              <Link
-                to="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
-              >
-                Admin
-              </Link>
-            )}
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-2">
-              <button onClick={handleRequestDemo} className="w-full btn btn-primary">
-                Request Demo
-              </button>
-              {!user ? (
-                <div className="grid grid-cols-2 gap-2">
-                  <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="btn border border-slate-300 text-slate-700 dark:border-slate-700 dark:text-slate-200 text-center">
-                    Log in
-                  </Link>
-                  <Link to="/signup" onClick={() => setMobileMenuOpen(false)} className="btn bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 text-center">
-                    Sign up
-                  </Link>
-                </div>
-              ) : (
-                <button onClick={handleLogout} className="w-full btn border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200">
+            {user ? (
+              <>
+                <Link
+                  to={user.role === 'admin' ? '/admin' : '/member'}
+                  onClick={() => setMenuOpen(false)}
+                  className="text-base font-medium text-purple-400"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout()
+                    setMenuOpen(false)
+                  }}
+                  className="text-left text-base font-medium text-slate-300 hover:text-white"
+                >
                   Log out
                 </button>
-              )}
-            </div>
-          </div>
-        )}
-      </header>
-
-      <ContactPopup isOpen={showPopup} onClose={() => setShowPopup(false)} />
-    </>
+              </>
+            ) : (
+              <div className="flex flex-col gap-3 pt-2">
+                <Link
+                  to="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-lg border border-slate-700 py-2 text-center text-sm font-medium text-slate-300"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-lg bg-purple-600 py-2 text-center text-sm font-semibold text-white"
+                >
+                  Sign up
+                </Link>
+              </div>
+            )}
+          </nav>
+        </div>
+      )}
+    </header>
   )
 }
