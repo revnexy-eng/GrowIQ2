@@ -1,56 +1,33 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import Home from './pages/Home.jsx'
-import Pricing from './pages/Pricing.jsx'
-import Signup from './pages/Signup.jsx'
-import Login from './pages/Login.jsx'
-import Checkout from './pages/Checkout.jsx'
-import Member from './pages/Member.jsx'
-import Admin from './pages/Admin.jsx'
-import ThankYou from './pages/ThankYou.jsx'
-import NotFound from './pages/NotFound.jsx'
-import Navbar from './components/Navbar.jsx'
-import Footer from './components/Footer.jsx'
-import './App.css'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Nav from './components/Nav'
+import Footer from './components/Footer'
+import Home from './pages/Home'
+import Pricing from './pages/Pricing'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
+import Checkout from './pages/Checkout'
+import Member from './pages/Member'
+import Admin from './pages/Admin'
+import ThankYou from './pages/ThankYou'
+import NotFound from './pages/NotFound'
 
-// Auth Context for centralized state management
 const AuthContext = createContext(null)
 
 export const useAuth = () => useContext(AuthContext)
 
-function ScrollToTop() {
-  const { pathname } = useLocation()
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
-  return null
-}
-
-function ProtectedRoute({ children, requireRole }) {
+function ProtectedRoute({ children, adminOnly = false }) {
   const { user } = useAuth()
-  const location = useLocation()
-
   if (!user) {
-    return (
-      <Navigate
-        to={`/login?next=${encodeURIComponent(location.pathname + location.search)}`}
-        replace
-      />
-    )
+    return <Navigate to="/login" replace />
   }
-
-  if (requireRole && user.role !== requireRole) {
-    return <Navigate to="/" replace />
+  if (adminOnly && user.role !== 'admin') {
+    return <Navigate to="/member" replace />
   }
-
   return children
 }
 
 export default function App() {
-  // Theme state setup
-  const [theme, setTheme] = useState(() => localStorage.getItem('mopsTheme') || 'light')
-  
-  // User state setup
   const [user, setUser] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('mopsUser') || 'null')
@@ -59,69 +36,58 @@ export default function App() {
     }
   })
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
-    localStorage.setItem('mopsTheme', theme)
-  }, [theme])
-
   const login = (userData) => {
-    localStorage.setItem('mopsUser', JSON.stringify(userData))
     setUser(userData)
+    localStorage.setItem('mopsUser', JSON.stringify(userData))
   }
 
   const logout = () => {
-    localStorage.removeItem('mopsUser')
     setUser(null)
+    localStorage.removeItem('mopsUser')
   }
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
-      <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 transition-colors duration-200 dark:bg-slate-950 dark:text-slate-100">
-        <ScrollToTop />
-        <Navbar theme={theme} setTheme={setTheme} />
-        <main className="flex-grow pt-16">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/checkout"
-              element={
-                <ProtectedRoute>
-                  <Checkout />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/thank-you"
-              element={
-                <ProtectedRoute>
-                  <ThankYou />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/member"
-              element={
-                <ProtectedRoute>
-                  <Member />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute requireRole="admin">
-                  <Admin />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <BrowserRouter>
+        <div className="flex min-h-screen flex-col bg-slate-950 text-slate-100 antialiased">
+          <Nav />
+          <main className="flex-1 pt-20">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route
+                path="/checkout"
+                element={
+                  <ProtectedRoute>
+                    <Checkout />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/member"
+                element={
+                  <ProtectedRoute>
+                    <Member />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute adminOnly>
+                    <Admin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/thank-you" element={<ThankYou />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </BrowserRouter>
     </AuthContext.Provider>
   )
 }
